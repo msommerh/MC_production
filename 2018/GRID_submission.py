@@ -2,17 +2,16 @@
 
 import os, multiprocessing, math, sys
 import ROOT as rt
-import optparse
 
 
 def submitJobs(jobname, jobRange, nEvents, jobflavour):
-    #path = os.getcwd()
-    path = '/afs/cern.ch/work/m/msommerh/public/MC_samples/ZPrime_to_BBar_M4000'
+    path = os.getcwd()
     for i in range(jobRange[0],jobRange[1]):
        	workdir = "tmp"+jobname+"/job_{}".format(i)
         os.makedirs(workdir)
 	os.chdir(workdir)
 	   
+        #write executable file for submission
 	with open('job_{}.sh'.format(i), 'w') as fout:
 	    fout.write("#!/bin/sh\n")
 	    fout.write("echo\n")
@@ -25,7 +24,6 @@ def submitJobs(jobname, jobRange, nEvents, jobflavour):
 	    fout.write("NMAX={}\n".format(nEvents))
 	    fout.write("SEED={}\n".format(i+1))
 	    fout.write("cd "+str(path)+"\n")
-	    #fout.write("cmsenv\n")
 	    fout.write("export SCRAM_ARCH=slc6_amd64_gcc630\n" )
 	    fout.write("if [ -r CMSSW_10_2_7/src ] ; then\n")
 	    fout.write("    echo 'release CMSSW_10_2_7 already exists'\n")
@@ -71,15 +69,15 @@ def submitJobs(jobname, jobRange, nEvents, jobflavour):
 	    fout.write("echo\n")
 	    fout.write("echo\n")
        
+	#submit job
         os.system("chmod 755 job_%i.sh"%i )
-        os.system("mv job_*.sh "+jobname+".sh")
-        makeSubmitFileCondor(jobname+".sh", jobname, jobflavour)
-	#makeSubmitFileCondor(jobname+".sh", jobname, "microcentury")
+        os.system("mv job_*.sh "+jobname+"_"+str(i)+".sh")
+        makeSubmitFileCondor(jobname+"_"+str(i)+".sh", jobname, jobflavour)
         os.system("condor_submit submit.sub")
 	print "job {} nr {} submitted".format(jobname, i)
         os.chdir("../..")
 
-def makeSubmitFileCondor(exe, jobname, jobflavour):
+def makeSubmitFileCondor(exe, jobname, jobflavour): 
     print "make options file for condor job submission"
     submitfile = open("submit.sub", "w")
     submitfile.write("executable  = "+exe+"\n")
@@ -94,20 +92,18 @@ def makeSubmitFileCondor(exe, jobname, jobflavour):
 
 if __name__ == "__main__":
  
-  #can I remove that?? 
-  usage = 'usage: %prog [options]'
-  parser = optparse.OptionParser(usage)
-  parser.add_option('-i', '--input', action='store', type='string', dest='origin', default='QCD_PU_samples.txt')
-  (options, args) = parser.parse_args()
-  origin        = options.origin
-  #??
+  jobname = "ZPrime_to_BBar_M400_2018"
 
-  jobname = "large_GRID_test"
+  #indices of first and second last job
   jobRange = (0,1)
+
   nEvents = 3
-  jobflavour = 'microcentury'
-  #jobflavour = 'longlunch'
-  #jobflavour = 'workday'
+
+  #choose priority
+  #jobflavour = 'espresso' #max 30min
+  jobflavour = 'microcentury' #max 1h
+  #jobflavour = 'longlunch' #max 2h
+  #jobflavour = 'workday' #max 8h
 
   submitJobs(jobname, jobRange, nEvents, jobflavour)
  
