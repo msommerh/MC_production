@@ -6,10 +6,10 @@ import ROOT as rt
 
 def submitJobs(jobname, jobRange, nEvents, jobflavour, M0):
     additional = "_M"+M0
-    jobname += additional
+    jobname_long = jobname + additional
     path = os.getcwd()
     for i in range(jobRange[0],jobRange[1]):
-       	workdir = "tmp"+jobname+"/job_{}".format(i)
+       	workdir = "tmp"+jobname_long+"/job_{}".format(i)
         os.makedirs(workdir)
 	os.chdir(workdir)
 	   
@@ -73,10 +73,10 @@ def submitJobs(jobname, jobRange, nEvents, jobflavour, M0):
 	    fout.write("echo\n")
        
         os.system("chmod 755 job_%i.sh"%i )
-        os.system("mv job_*.sh "+jobname+".sh")
-        makeSubmitFileCondor(jobname+"_"+str(i)+".sh", jobname, jobflavour)
+        os.system("mv job_*.sh "+jobname_long+".sh")
+        makeSubmitFileCondor(jobname_long+"_"+str(i)+".sh", jobname_long, jobflavour)
         os.system("condor_submit submit.sub")
-	print "job {} nr {} submitted".format(jobname, i)
+	print "job {} nr {} submitted".format(jobname_long, i)
         os.chdir("../..")
 
 def makeSubmitFileCondor(exe, jobname, jobflavour):
@@ -95,13 +95,14 @@ def makeSubmitFileCondor(exe, jobname, jobflavour):
 if __name__ == "__main__":
  
   jobname = "ZPrime_to_BBar_2017"
-  jobRange = (0,1)
-  nEvents = 200
+  jobRange = (0,30)
+  nEvents = 1000
 
   #jobflavour = 'espresso'
   #jobflavour = 'microcentury'
   #jobflavour = 'longlunch'
-  jobflavour = 'workday'
+  #jobflavour = 'workday'
+  jobflavour = 'tomorrow'
 
   M0_list = ['1000', '1200', '1400', '1600', '1800', '2000', '2500', '3000', '3500', '4000', '4500', '5000', '5500', '6000']
   for M0 in M0_list:
