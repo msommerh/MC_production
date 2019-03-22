@@ -6,6 +6,8 @@
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
+from Configuration.Generator.Pythia8CommonSettings_cfi import *
+from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
 
 import sys
 args = sys.argv
@@ -14,22 +16,22 @@ print '.............. enter GS_step1_template.py ............'
 
 nmax = 1
 
-if len(args)!=6:
-    print 'Provide [sample][index][nmax][seed]', len(args)
+if len(args)!=7:
+    print 'Provide [sample][index][nmax][seed][M0]', len(args)
     sys.exit(0)
 else:
     sample = args[2]
     index = args[3]
     nmax = int(args[4])
     seed = int(args[5])
+    M0 = args[6]
 
 
 print 'sample name = ', sample
 print 'index = ', index
 print 'nmax = ', nmax
 print 'seed = ', seed
-
-
+print 'M0 = ', M0
 
 process = cms.Process('SIM',eras.Run2_2017)
 
@@ -80,7 +82,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string("file:GS_" + sample + "_" + index + ".root"),
+    fileName = cms.untracked.string("file:GS_" + sample + "_M" + M0 + "_" + index + ".root"),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -103,24 +105,13 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
     crossSection = cms.untracked.double(5.11e-5),
     maxEventsToPrint = cms.untracked.int32(0),
     PythiaParameters = cms.PSet(
-        pythia8CommonSettings = cms.vstring('Tune:preferLHAPDF = 2',
-            'Main:timesAllowErrors = 10000',
-            'Check:epTolErr = 0.01',
-            'Beams:setProductionScalesFromLHEF = off',
-            'SLHA:keepSM = on',
-            'SLHA:minMassSM = 1000.',
-            'ParticleDecays:limitTau0 = on',
-            'ParticleDecays:tau0Max = 10',
-            'ParticleDecays:allowPhotonRadiation = on'),
-        pythia8CUEP8M1Settings = cms.vstring('Tune:pp 14',
-            'Tune:ee 7',
-            'MultipartonInteractions:pT0Ref=2.4024',
-            'MultipartonInteractions:ecmPow=0.25208',
-            'MultipartonInteractions:expPow=1.6'),
+        pythia8CommonSettingsBlock,
+        pythia8CUEP8M1SettingsBlock,
+
         processParameters = cms.vstring(
                                 'NewGaugeBoson:ffbar2gmZZprime = on',
                                 'Zprime:gmZmode = 3', # only pure Z' contribution
-                                '32:m0 = 3000',
+                                '32:m0 = {}'.format(M0),
                                 '32:onMode = off', # switch off all of the Z' decay
                                 '32:onIfAny = 5', # switch on the Z'->BBbar
                         ),

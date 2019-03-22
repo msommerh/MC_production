@@ -16,22 +16,22 @@ print '.............. enter GS_step1_template.py ............'
 
 nmax = 1
 
-if len(args)!=6:
-    print 'Provide [sample][index][nmax][seed]', len(args)
+if len(args)!=7:
+    print 'Provide [sample][index][nmax][seed][M0]', len(args)
     sys.exit(0)
 else:
     sample = args[2]
     index = args[3]
     nmax = int(args[4])
     seed = int(args[5])
-
+    M0 = args[6]
 
 
 print 'sample name = ', sample
 print 'index = ', index
 print 'nmax = ', nmax
 print 'seed = ', seed
-
+print 'M0 = ', M0
 
 process = cms.Process('SIM',eras.Run2_2018)
 
@@ -81,7 +81,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string("file:GS_" + sample + "_" + index + ".root"),
+    fileName = cms.untracked.string("file:GS_" + sample + "_M" + M0 + "_" + index + ".root"),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -110,7 +110,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
         processParameters = cms.vstring(
                                 'NewGaugeBoson:ffbar2gmZZprime = on',
                                 'Zprime:gmZmode = 3', # only pure Z' contribution
-                                '32:m0 = 4000', 
+                                '32:m0 = {}'.format(M0), 
                                 '32:onMode = off', # switch off all of the Z' decay
                                 '32:onIfAny = 5', # switch on the Z'->BBbar
                         ),
