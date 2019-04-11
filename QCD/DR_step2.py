@@ -11,7 +11,7 @@ from Configuration.ProcessModifiers.premix_stage2_cff import premix_stage2
 
 print '.............. enter DR_step2_template.py ............'
 
-bin_ = 0
+bin_ = 16
 
 bin_list = [('5','10'), ('10','15'), ('15','30'), ('30','50'), ('50','80'), ('80','120'), ('120','170'), ('170','300'), ('300','470'), ('470','600'), ('600','800'), ('800','1000'), ('1000','1400'), ('1400','1800'), ('1800','2400'), ('2400','3200'), ('3200', 'Inf')]
 
@@ -44,8 +44,8 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring('file:EXO-RunIIAutumn18DRPremix-00258_step1.root'),
-    fileNames = cms.untracked.vstring("file:DR_step1_" + sample + ".root"),
+    fileNames = cms.untracked.vstring("file:DR1.root"),
+    #fileNames = cms.untracked.vstring("file:DR_step1_" + sample + ".root"),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -70,8 +70,8 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
-#    fileName = cms.untracked.string('file:EXO-RunIIAutumn18DRPremix-00258.root'),
-    fileName = cms.untracked.string("file:AOD_" + sample + ".root"), 
+    #fileName = cms.untracked.string("file:AOD_" + sample + ".root"), 
+    fileName = cms.untracked.string("file:tree.root"), 
     outputCommands = process.AODSIMEventContent.outputCommands
 )
 

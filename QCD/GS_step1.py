@@ -14,7 +14,7 @@ args = sys.argv
 
 print '.............. enter GS_step1_template.py ............'
 
-nmax = 2
+nmax = 3
 
 #if len(args)!=8:
 #    print 'Provide [sample][index][nmax][seed][minPT][maxPT]', len(args)
@@ -94,12 +94,14 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string("file:GS_" + sample  + ".root"),
+    fileName = cms.untracked.string("file:GS1.root"),
+    #fileName = cms.untracked.string("file:GS_" + sample  + ".root"),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
 # Additional output definition
+#process.RAWSIMoutput.outputCommands.append('drop *_hlt*_*_*')
 
 # Other statements
 process.XMLFromDBSource.label = cms.string("Extended")
